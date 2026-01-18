@@ -4,15 +4,19 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    credentialsId: 'github-jenkins',
+                    credentialsId: 'github-token',
                     url: 'https://github.com/priyanka31897/insurance-app.git'
             }
         }
+
         stage('Deploy') {
             steps {
                 sh '''
-                sudo mkdir -p /var/www/html
-                sudo cp index.html /var/www/html/index.html
+                sudo dnf install -y nginx
+                sudo systemctl start nginx
+                sudo systemctl enable nginx
+                sudo mkdir -p /usr/share/nginx/html
+                sudo cp ~/insurance-app/index.html /usr/share/nginx/html/index.html
                 '''
             }
         }
