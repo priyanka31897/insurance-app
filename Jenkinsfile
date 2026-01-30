@@ -1,22 +1,26 @@
 pipeline {
-    agent any
+    agent { label 'agentlinux' }
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'github-token',
-                    url: 'https://github.com/priyanka31897/insurance-app.git'
+                git branch: 'main', url: 'https://github.com/priyanka31897/insurance-devops-project.git'
             }
         }
-
-        stage('Deploy') {
+        stage('Setup Python') {
             steps {
                 sh '''
-                sudo dnf install -y nginx
-                sudo systemctl start nginx
-                sudo systemctl enable nginx
-                sudo mkdir -p /usr/share/nginx/html
-                sudo cp ~/insurance-app/index.html /usr/share/nginx/html/index.html
+                python3 -m venv venv
+                source venv/bin/activate
+                pip install --upgrade pip
+                pip install flask
+                '''
+            }
+        }
+        stage('Run App') {
+            steps {
+                sh '''
+                source venv/bin/activate
+                python3 app.py
                 '''
             }
         }
